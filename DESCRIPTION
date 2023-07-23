@@ -1,0 +1,18 @@
+Package: NNemesis
+Type: Package
+Title: Comprehensive Tools for Neural Networks, Evolution, Modeling, Statistical Inference, and Simulations
+Version: 0.1.0
+Authors@R: person("Francisco", "Richter", email = "richtf@usi.ch", role = c("aut", "cre"))
+Description: NNemesis provides a suite of tools for Neural Networks, Evolution, Modeling, Statistical Inference, and Simulations. It is designed to tackle complex tasks across these domains, providing users with an efficient and effective way to overcome their data analysis challenges.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Imports:
+    dplyr,
+    torch,
+    ggplot2,
+    stats,
+    utils,
+    svMisc
+RoxygenNote: 7.2.3
+VignetteBuilder: knitr
