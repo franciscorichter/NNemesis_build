@@ -13,10 +13,10 @@ NNemesis_Build is a specialized R package for constructing and optimizing Neural
 
 To install the latest version of NNemesis_Build from GitHub:
 
-\```r
+```r
 # install.packages("devtools")
 devtools::install_github("franciscorichter/NNemesis_Build")
-\```
+```
 
 ## Usage
 
