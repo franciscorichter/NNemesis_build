@@ -1,6 +1,6 @@
-# NNemesis_Builder
+# NNemesis_Build
 
-NNemesis_Builder is a specialized R package for constructing and optimizing Neural Networks. It is an offspring of the original NNemesis package, focusing on the creation, training, and fine-tuning of neural networks. The package is designed to simplify the process of building complex neural network models and help users overcome their data science challenges.
+NNemesis_Build is a specialized R package for constructing and optimizing Neural Networks. It is an offspring of the original NNemesis package, focusing on the creation, training, and fine-tuning of neural networks. The package is designed to simplify the process of building complex neural network models and help users overcome their data science challenges.
 
 ## Features
 
@@ -11,19 +11,19 @@ NNemesis_Builder is a specialized R package for constructing and optimizing Neur
 
 ## Installation
 
-To install the latest version of NNemesis_Builder from GitHub:
+To install the latest version of NNemesis_Build from GitHub:
 
-```r
+\```r
 # install.packages("devtools")
-devtools::install_github("franciscorichter/NNemesis_Builder")
-```
+devtools::install_github("franciscorichter/NNemesis_Build")
+\```
 
 ## Usage
 
-Here is a basic example of how to use NNemesis_Builder:
+Here is a basic example of how to use NNemesis_Build:
 
 ```r
-library(NNemesis_Builder)
+library(NNemesis_Build)
 # Define your neural network structure and parameters here
 nn_model = build_nn(parameters)
 nn_model = train_nn(nn_model, training_data)
