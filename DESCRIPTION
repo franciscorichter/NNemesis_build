@@ -1,4 +1,4 @@
-Package: NNemesis
+Package: NNemesis.Build
 Type: Package
 Title: Comprehensive Tools for Neural Networks, Evolution, Modeling, Statistical Inference, and Simulations
 Version: 0.1.0
