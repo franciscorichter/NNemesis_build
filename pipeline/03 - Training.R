@@ -4,7 +4,8 @@
 n_train    <- floor(n_trees * .9)
 n_valid    <- floor(n_trees * .05)
 n_test     <- n_trees - n_train - n_valid
-batch_size <- min(n_trees * .01, 10)
+#batch_size <- min(n_trees * .01, 10)
+batch_size <- 10
 nn_type <- "cnn-ltt"
 
 subset_indices <- sample(1:n_trees, n_trees)
@@ -42,8 +43,8 @@ cnn.net <- nn_module(
     self$conv1 <- nn_conv1d(in_channels = 1, out_channels = n_hidden, kernel_size = ker_size)
     self$conv2 <- nn_conv1d(in_channels = n_hidden, out_channels = 2*n_hidden, kernel_size = ker_size)
     self$conv3 <- nn_conv1d(in_channels = 2*n_hidden, out_channels = 2*2*n_hidden, kernel_size = ker_size)
-    n_flatten <- as.integer((n_input + 1 - ker_size))
-    self$fc1 <- nn_linear(in_features = n_flatten * (2*n_hidden), out_features = 100)
+    n_flatten <- NNemesis:::compute_dim_ouput_flatten_cnn(n_input,n_layer,ker_size)
+    self$fc1 <- nn_linear(in_features = n_flatten*(2*2*n_hidden) , out_features = 100)
     self$fc2 <- nn_linear(in_features = 100, out_features = n_out)
   },
   

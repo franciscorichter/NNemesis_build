@@ -141,8 +141,73 @@ convert_ltt_dataframe_to_dataset_full <- function(ltt_full, nn_type = "cnn-ltt")
 }
 
 
+convert_ltt_dataframe_to_dataset_orig<-function(df.ltt, true.param, nn_type= "cnn-ltt" ){
+  
+  if (nn_type == "cnn-ltt"){
+    ds.ltt <- torch::dataset(
+      name <- "ltt_dataset", 
+      initialize = function(df.ltt, true.param){
+        
+        # input
+        df.ltt[is.na(df.ltt)] <- 0
+        
+        array.ltt <- df.ltt %>% 
+          as.matrix() %>% 
+          torch_tensor()
+        self$x <- array.ltt
+        
+        # target 
+        self$y <- torch_tensor(do.call(cbind, true.param)) # target
+      }, 
+      
+      .getitem = function(i) {list(x = self$x[,i]$unsqueeze(1), y = self$y[i, ])},
+      
+      .length = function() {self$y$size()[[1]]}
+    )
+  }
+  
+  else{
+    ds.ltt <- torch::dataset(
+      name <- "ltt_dataset", 
+      initialize = function(df.ltt, true.param){
+        
+        # input
+        df.ltt[is.na(df.ltt)] <- 0
+        
+        array.ltt <- df.ltt %>% 
+          as.matrix() %>% 
+          torch_tensor()
+        self$x <- array.ltt
+        
+        # target 
+        self$y <- torch_tensor(do.call(cbind, true.param)) # target
+      }, 
+      
+      .getitem = function(i) {list(x = self$x[,i], y = self$y[i, ])},
+      
+      .length = function() {self$y$size()[[1]]}
+    )
+  }
+  
+  return(ds.ltt)
+}
+
+
 extract_elements <- function(list_of_vectors, indices_to_extract){
   l <- as.list(do.call(cbind, list_of_vectors)[indices_to_extract,] 
                %>% as.data.frame())
   return(l)
+}
+
+
+compute_dim_ouput_flatten_cnn <- function(n_input, n_layer, kernel_size = 2){
+  
+  k <- kernel_size - 1 
+  
+  for (i in 1:n_layer){
+    n_input <- as.integer((n_input - k)/2)
+  }
+  
+  return(n_input)
+  
 }
