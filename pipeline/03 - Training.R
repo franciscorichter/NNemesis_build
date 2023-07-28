@@ -43,7 +43,7 @@ cnn.net <- nn_module(
     self$conv1 <- nn_conv1d(in_channels = 1, out_channels = n_hidden, kernel_size = ker_size)
     self$conv2 <- nn_conv1d(in_channels = n_hidden, out_channels = 2*n_hidden, kernel_size = ker_size)
     self$conv3 <- nn_conv1d(in_channels = 2*n_hidden, out_channels = 2*2*n_hidden, kernel_size = ker_size)
-    n_flatten <- NNemesis:::compute_dim_ouput_flatten_cnn(n_input,n_layer,ker_size)
+    n_flatten <- compute_dim_ouput_flatten_cnn(n_input,n_layer,ker_size)
     self$fc1 <- nn_linear(in_features = n_flatten*(2*2*n_hidden) , out_features = 100)
     self$fc2 <- nn_linear(in_features = 100, out_features = n_out)
   },
@@ -166,7 +166,6 @@ coro::loop(for (b in test_dl) {
 
 cat(sprintf("test - loss: %3.5f", mean(test_loss)))
 
-
 ## Loss Plot 
 # Plot the loss curve
 plot(1:length(train_losses), train_losses, type = "l", col = "blue",
@@ -178,7 +177,7 @@ legend("topright", legend = c("Training Loss", "Validation Loss"),
 
 ## Saving the model
 
-torch::torch_save(cnn_ltt, paste("data/models/DDD-", n_trees, ".pt", sep = ""))
-
+torch::torch_save(cnn_ltt, paste("NNs/DDD-", n_trees, ".pt", sep = ""))
+save.image(file=paste("NNs/DDD-", n_trees, ".RData", sep = ""))
 cat(paste("\n Model cnn ltt saved", sep = ""))
 cat("\nSaving model... Done.")

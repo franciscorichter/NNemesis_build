@@ -15,6 +15,6 @@ df.ltt <- NNemesis:::generate_ltt_dataframe(trees = trees,
 
 #ds.ltt <- NNemesis:::convert_ltt_dataframe_to_dataset_full(ltt_full = df.ltt_full)
 
-ds.ltt <- NNemesis:::convert_ltt_dataframe_to_dataset_orig(df.ltt,param)
+ds.ltt <- convert_ltt_dataframe_to_dataset_orig(df.ltt,param)
 
 
