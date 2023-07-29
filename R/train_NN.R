@@ -128,4 +128,11 @@ train_NN <- function(df.ltt, param, n_trees, nn_type = "cnn-ltt", n_hidden = 8, 
   save.image(file=paste("NNs/DDD-", n_trees, ".RData", sep = ""))
   cat(paste("\n Model cnn ltt saved at", model_path))
   cat("\nSaving model... Done.")
+  results <- list(
+    model = cnn_ltt,
+    train_losses = train_losses,
+    valid_losses = valid_losses,
+    test_loss = mean(test_loss)
+  )
+  return(results)
 }
