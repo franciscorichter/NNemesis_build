@@ -24,4 +24,4 @@ tr = train_NN(df.ltt = df.ltt, param = param, n_trees = n_trees, n_input = max_n
 
 plot_loss(train_losses, valid_losses)
 
-evaluate_and_plot(model = cnn_ltt, test_dl = test_dl)
+ev = evaluate_and_plot(model = cnn_ltt, test_dl = test_dl)
