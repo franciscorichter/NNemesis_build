@@ -1,6 +1,6 @@
 train_NN <- function(df.ltt, param, n_trees, nn_type = "cnn-ltt", n_hidden = 8, n_layer = 3, 
                      ker_size = 5, p_dropout = 0.01, n_input = max_n_taxa, 
-                     n_out = 3, n_epochs = 1000, patience = 100, seed = 1234) {
+                     n_out = 3, n_epochs = 1000, patience = 100, seed = 1234,device="cpu") {
   
   set.seed(seed)
   torch_manual_seed(seed)
@@ -56,7 +56,7 @@ train_NN <- function(df.ltt, param, n_trees, nn_type = "cnn-ltt", n_hidden = 8, 
   )
   
   cnn_ltt <- cnn.net(n_input, n_out, n_hidden, n_layer, ker_size, p_dropout)
-  device = "cpu"
+  device = device
   cnn_ltt$to(device = device)
   
   opt <- optim_adam(params = cnn_ltt$parameters)
@@ -123,6 +123,9 @@ train_NN <- function(df.ltt, param, n_trees, nn_type = "cnn-ltt", n_hidden = 8, 
   })
   cat(sprintf("test - loss: %3.5f", mean(test_loss)))
   
+
+ 
+  
   model_path <- paste("NNs/DDD-", n_trees, ".pt", sep = "")
   torch::torch_save(cnn_ltt, model_path)
   save.image(file=paste("NNs/DDD-", n_trees, ".RData", sep = ""))
@@ -133,6 +136,14 @@ train_NN <- function(df.ltt, param, n_trees, nn_type = "cnn-ltt", n_hidden = 8, 
     train_losses = train_losses,
     valid_losses = valid_losses,
     test_loss = mean(test_loss)
+    
   )
+  
+  ###Compute predictions on test
+  evaluate_and_plot(model = cnn_ltt, test_dl = test_dl,names(param),n_out,device)
+  
+  
+  
+  
   return(results)
 }

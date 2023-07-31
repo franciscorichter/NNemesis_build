@@ -1,37 +1,44 @@
-evaluate_and_plot <- function(model, test_dl) {
+evaluate_and_plot <- function(model, test_dl,names,n_out,device) {
   # Create empty lists to store the outputs and the true labels
-  outputs <- list()
-  true_labels <- list()
+  
+  outputs <- vector(mode = "list", length = n_out)
+  names(outputs) <- names
+  
+  true_labels <- vector(mode = "list", length = n_out)
+  names(true_labels) <- names
+  
   
   # Set the model to evaluation mode
   model$eval()
   
-  # Iterate over the test DataLoader
-  coro::loop(for (b in test_dl) {
-    # Get the data and labels from the current batch
-    data <- b$x
-    labels <- b$y
-    
-    # Use the model to get the output for the current batch
-    output <- model(data)
-    
-    # Append the output and the labels to their respective lists
-    outputs <- c(outputs, as.array(output$detach()))
-    true_labels <- c(true_labels, as.array(labels))
-  })
+
   
-  # Convert the lists to vectors
-  outputs <- do.call(rbind, outputs)
-  true_labels <- do.call(rbind, true_labels)
+    
+    
+    # Compute predictions 
+    coro::loop(for (b in test_dl) {
+      out <- model(b$x$to(device = device))
+      pred <- as.numeric(out$to(device = "cpu")) # move the tensor to CPU 
+      true <- as.numeric(b$y)
+      for (i in 1:n_out){
+        outputs[[i]] <- c(outputs[[i]], pred[i])
+        true_labels[[i]] <- c(true_labels[[i]], true[i])
+        
+        }
+    })
+  
+  
   
   # Plot true vs predicted for each output
-  par(mfrow = c(1, ncol(outputs))) # Arrange the plots in 1 row and as many columns as there are outputs
-  for (i in seq_len(ncol(outputs))) {
-    plot(true_labels[, i], outputs[, i], main = paste("True vs Predicted for output", i), 
+  par(mfrow = c(1, length(outputs))) # Arrange the plots in 1 row and as many columns as there are outputs
+  for (i in seq_len(length(outputs))) {
+    plot(true_labels[[ i]], outputs[[ i]], main = paste("True vs Predicted for output ", names[i]), 
          xlab = "True values", ylab = "Predicted values")
     abline(0, 1) # Adds a line representing a perfect prediction
   }
 }
+
+
 
 
 plot_loss <- function(train_losses, valid_losses) {

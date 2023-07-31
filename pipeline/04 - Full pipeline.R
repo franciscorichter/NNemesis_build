@@ -22,6 +22,6 @@ ds.ltt <- convert_ltt_dataframe_to_dataset_orig(df.ltt, param)
 # Train the neural network
 tr = train_NN(df.ltt = df.ltt, param = param, n_trees = n_trees, n_input = max_n_taxa, seed = 1234)
 
-plot_loss(train_losses, valid_losses)
+plot_loss(tr$train_losses, tr$valid_losses)
 
-ev = evaluate_and_plot(model = cnn_ltt, test_dl = test_dl)
+#ev = evaluate_and_plot(model = cnn_ltt, test_dl = test_dl)
