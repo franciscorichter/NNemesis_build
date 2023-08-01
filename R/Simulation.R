@@ -28,8 +28,9 @@ generatePhyloDDD <- function(n_trees,
       outputs <- emphasis:::sim_tree_pd_cpp(pars = sim.param,
                                      max_t = 1,
                                      max_lin = 1e+6,
-                                     max_tries = 10)
-      if(is.list(outputs)){
+                                     max_tries = 10,
+                                     useDDD=TRUE)
+      if(is.list(outputs) ){
         if(max(outputs$brts)==1) key = 0
       } 
     }
