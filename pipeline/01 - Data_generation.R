@@ -2,7 +2,7 @@ n_trees = 100
 lambda_interval <- c(0, 50) # speciation rate
 K_interval <- c(15,400)
 
-out = NNemesis.Build:::generatePhyloDDD(n_trees = n_trees,
+out = generatePhyloDDD(n_trees = n_trees,
                  lambda_interval = lambda_interval,
                  K_interval = K_interval)
 

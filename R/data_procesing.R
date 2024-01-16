@@ -38,7 +38,7 @@ generate_ltt_dataframe <- function(trees, n_taxa){
   
   n_trees  <- length(trees) # number of trees 
   n_row <- ifelse(length(n_taxa) == 1, n_taxa, n_taxa[2])
-  df.ltt <- data.frame("tree1" = rep(NA, n_row))
+  df.ltt <- data.frame("tree1" = rep(0, n_row))
   
   cat("Creating LTT dataframe...\n")
   

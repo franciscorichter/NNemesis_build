@@ -1,6 +1,14 @@
 train_NN <- function(df.ltt, param, n_trees, nn_type = "cnn-ltt", n_hidden = 8, n_layer = 3, 
                      ker_size = 5, p_dropout = 0.01, n_input = max_n_taxa, 
-                     n_out = 3, n_epochs = 1000, patience = 100, seed = 1234,device="cpu") {
+                     n_out, n_epochs = 1000, patience = 100, seed = 1234, device="cpu") {
+  
+  compute_flattened_size <- function(n_input, n_layer, ker_size) {
+    for (i in 1:n_layer) {
+      n_input <- n_input - ker_size + 1
+      n_input <- floor(n_input / 2)  # assuming stride of 2 for avg_pool1d
+    }
+    return(n_input)
+  }
   
   set.seed(seed)
   torch_manual_seed(seed)
@@ -23,48 +31,56 @@ train_NN <- function(df.ltt, param, n_trees, nn_type = "cnn-ltt", n_hidden = 8, 
   valid_dl <- valid_ds %>% dataloader(batch_size=batch_size, shuffle=FALSE)
   test_dl  <- test_ds  %>% dataloader(batch_size=1, shuffle=FALSE)
   
+  
   cnn.net <- nn_module(
+    
     "corr-cnn",
+    
     initialize = function(n_input, n_out, n_hidden, n_layer, ker_size, p_dropout) {
       self$conv1 <- nn_conv1d(in_channels = 1, out_channels = n_hidden, kernel_size = ker_size)
       self$conv2 <- nn_conv1d(in_channels = n_hidden, out_channels = 2*n_hidden, kernel_size = ker_size)
       self$conv3 <- nn_conv1d(in_channels = 2*n_hidden, out_channels = 2*2*n_hidden, kernel_size = ker_size)
-      n_flatten <- compute_dim_ouput_flatten_cnn(n_input,n_layer,ker_size)
-      self$fc1 <- nn_linear(in_features = n_flatten*(2*2*n_hidden) , out_features = 100)
+      n_flatten <- compute_dim_ouput_flatten_cnn(n_input, n_layer, ker_size)
+      self$fc1 <- nn_linear(in_features = n_flatten * (2*2*n_hidden), out_features = 100)
       self$fc2 <- nn_linear(in_features = 100, out_features = n_out)
     },
+    
     forward = function(x) {
       x %>% 
         self$conv1() %>%
         nnf_relu() %>%
         nnf_dropout(p = p_dropout) %>%
         nnf_avg_pool1d(2) %>%
+        
         self$conv2() %>%
         nnf_relu() %>%
         nnf_dropout(p = p_dropout) %>%
         nnf_avg_pool1d(2) %>%
+        
         self$conv3() %>%
         nnf_relu() %>%
         nnf_dropout(p = p_dropout) %>%
         nnf_avg_pool1d(2) %>%
+        
         torch_flatten(start_dim = 2) %>%
         self$fc1() %>%
         nnf_relu() %>%
         nnf_dropout(p = p_dropout) %>%
+        
         self$fc2()
     }
   )
   
   cnn_ltt <- cnn.net(n_input, n_out, n_hidden, n_layer, ker_size, p_dropout)
-  device = device
   cnn_ltt$to(device = device)
   
   opt <- optim_adam(params = cnn_ltt$parameters)
   
-  train_batch <- function(b){
+  train_batch <- function(b) {
     opt$zero_grad()
     output <- cnn_ltt(b$x$to(device = device))
     target <- b$y$to(device = device)
+    
     loss <- nnf_mse_loss(output, target)
     loss$backward()
     opt$step()
@@ -101,16 +117,18 @@ train_NN <- function(df.ltt, param, n_trees, nn_type = "cnn-ltt", n_hidden = 8, 
     })
     cat(sprintf(" - valid - loss: %3.5f", mean(valid_loss)))
     valid_losses <- append(valid_losses, mean(valid_loss))
-    if (last_loss <= mean(valid_loss)){
+    epsilon <- 0.001
+    if (last_loss - mean(valid_loss) <= epsilon) {
       trigger <- trigger + 1
-    }else{
+    } else {
       trigger <- 0
       last_loss <- mean(valid_loss)
     }
+    
     cat(sprintf(" - patience: %0.1d/%0.1d", trigger, patience))
     cat("\n")
     epoch <- epoch + 1
-    if (trigger == patience){
+    if (trigger == patience) {
       print("Early stopping triggered")
       break
     }
@@ -123,9 +141,6 @@ train_NN <- function(df.ltt, param, n_trees, nn_type = "cnn-ltt", n_hidden = 8, 
   })
   cat(sprintf("test - loss: %3.5f", mean(test_loss)))
   
-
- 
-  
   model_path <- paste("NNs/DDD-", n_trees, ".pt", sep = "")
   torch::torch_save(cnn_ltt, model_path)
   save.image(file=paste("NNs/DDD-", n_trees, ".RData", sep = ""))
@@ -136,14 +151,10 @@ train_NN <- function(df.ltt, param, n_trees, nn_type = "cnn-ltt", n_hidden = 8, 
     train_losses = train_losses,
     valid_losses = valid_losses,
     test_loss = mean(test_loss)
-    
   )
   
   ###Compute predictions on test
-  evaluate_and_plot(model = cnn_ltt, test_dl = test_dl,names(param),n_out,device)
-  
-  
-  
+  evaluate_and_plot(model = cnn_ltt, test_dl = test_dl, names(param), n_out, device)
   
   return(results)
 }
