@@ -23,6 +23,8 @@ train_NN <- function(df.ltt, param, n_trees, nn_type = "cnn-ltt", n_hidden = 8, 
   valid_indices <- subset_indices[(n_train + 1):(n_train + n_valid)]
   test_indices  <- subset_indices[(n_train + n_valid + 1):n_trees]
   
+  ds.ltt <- convert_ltt_dataframe_to_dataset_orig(df.ltt, param)
+  
   train_ds <- ds.ltt(df.ltt[, train_indices], as.list(do.call(cbind, param)[train_indices,] %>% as.data.frame()))
   valid_ds <- ds.ltt(df.ltt[, valid_indices], as.list(do.call(cbind, param)[valid_indices,] %>% as.data.frame()))
   test_ds  <- ds.ltt(df.ltt[, test_indices], as.list(do.call(cbind, param)[test_indices,] %>% as.data.frame()))
@@ -141,20 +143,19 @@ train_NN <- function(df.ltt, param, n_trees, nn_type = "cnn-ltt", n_hidden = 8, 
   })
   cat(sprintf("test - loss: %3.5f", mean(test_loss)))
   
-  model_path <- paste("NNs/DDD-", n_trees, ".pt", sep = "")
-  torch::torch_save(cnn_ltt, model_path)
-  save.image(file=paste("NNs/DDD-", n_trees, ".RData", sep = ""))
-  cat(paste("\n Model cnn ltt saved at", model_path))
   cat("\nSaving model... Done.")
   results <- list(
     model = cnn_ltt,
     train_losses = train_losses,
     valid_losses = valid_losses,
-    test_loss = mean(test_loss)
+    test_loss = mean(test_loss),
+    test_dl = test_dl
   )
   
   ###Compute predictions on test
-  evaluate_and_plot(model = cnn_ltt, test_dl = test_dl, names(param), n_out, device)
-  
   return(results)
 }
+
+
+
+

@@ -3,20 +3,20 @@ generatePhyloPD <- function(n_trees,
                             lambda_interval,
                             betaN_interval,
                             betaP_interval,
-                            max_lin = 1e+6,
-                            max_tries = 10){
+                            max_lin = 1e+5,
+                            max_tries = 10) {
   
-  # Preallocate lists
-  trees <- vector("list", n_trees)
-  extrees <- vector("list", n_trees)
-  Lmats <- vector("list", n_trees)
-  brds_s <- vector("list", n_trees)
+  # Dynamically allocate lists
+  trees <- list()
+  extrees <- list()
+  Lmats <- list()
+  brds_s <- list()
   
-  name.param <- c("mu","lambda", "betaN","betaP")
+  name.param <- c("mu", "lambda", "betaN", "betaP")
   true.param <- vector(mode='list', length=4)
   names(true.param) <- name.param
   
-  for(j in 1:n_trees){
+  for(j in 1:n_trees) {
     
     # Randomly sample parameter values
     lambda_sample <- runif(1, lambda_interval[1], lambda_interval[2])
@@ -34,10 +34,10 @@ generatePhyloPD <- function(n_trees,
     }, error = function(e) NULL)
     
     if (is.list(outputs) && max(outputs$brts) == 1) {
-      trees[[j]] <- outputs[[1]]
-      extrees[[j]] <- outputs[[2]]
-      Lmats[[j]] <- outputs[[3]]
-      brds_s[[j]] <- outputs[[4]]
+      trees[[length(trees) + 1]] <- outputs[[1]]
+      extrees[[length(extrees) + 1]] <- outputs[[2]]
+      Lmats[[length(Lmats) + 1]] <- outputs[[3]]
+      brds_s[[length(brds_s) + 1]] <- outputs[[4]]
       for (i in 1:4) {
         true.param[[i]] <- c(true.param[[i]], sim.param[i])
       }
@@ -50,6 +50,7 @@ generatePhyloPD <- function(n_trees,
   # Package and return results
   list(trees = trees, param = true.param, tas = extrees, L = Lmats, brts = brds_s)
 }
+
 
 
 generatePhyloDDD <- function(n_trees,

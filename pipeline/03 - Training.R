@@ -1,3 +1,38 @@
+
+# Data loading and preprocesing
+
+load("Data/simulated/simulated_data_1e+05_0.1_2_-5_-5_20240116_232537.RData")
+
+trees = out$trees
+param = out$param
+num_nodes = (unlist(sapply(trees, function(list) list$Nnode)))
+max_n_taxa = max(num_nodes)
+summary(num_nodes)
+
+
+
+# Clean trees list 
+non_null_indices = c() # Create an empty vector to store indices of non-null trees
+for(i in 1:length(trees)){
+  tr = trees[[i]]
+  if(!is.null(tr)) non_null_indices = c(non_null_indices,i) # Collect indices of non-null values
+}
+
+length(trees)
+# Subset trees and param using non_null_indices
+trees <- trees[non_null_indices]
+n_trees = length(trees)
+n_trees
+
+df.ltt <- NNemesis:::generate_ltt_dataframe(trees = trees, 
+                                            n_taxa = max_n_taxa)
+
+
+ds.ltt <- convert_ltt_dataframe_to_dataset_orig(df.ltt,param)
+
+
+
+
 # Parameters of the NN's training
 #set.seed(113)
 

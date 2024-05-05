@@ -5,7 +5,7 @@ K_interval <- c(15,400)
 out = generatePhyloDDD(n_trees = n_trees,
                  lambda_interval = lambda_interval,
                  K_interval = K_interval)
-
+setwd("~/Library/CloudStorage/Dropbox/github/NNemesis_build/Data/simulated")
 fi = paste0(n_trees,"_",lambda_interval[1],"_",lambda_interval[2],"_",K_interval[1],"_",K_interval[2],".RData",sep="")
 save.image(file=fi)
 #saveRDS(out, file = paste("data/simulations/DDD-", n_trees, ".rds", sep = ""))
