@@ -35,3 +35,16 @@ Please refer to the vignettes for detailed examples and usage instructions.
 ## License
 
 This project is licensed under the terms of the MIT license.
+
+
+
+-------------------------------------------------------------------
+
+## Simulation 
+
+
+### PD model 
+
+![Simulation Plot](images/simulation_PD.png)
+
+
